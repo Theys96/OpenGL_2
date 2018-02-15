@@ -145,8 +145,9 @@ void MainView::initializeGL() {
     pyramid[16] = {1,-1,1,1,0,1};
     pyramid[17] = {1,-1,-1,1,0,0};
 
-    cubeTransform.translate({2,0,-6});
-    pyramidTransform.translate({-2,0,-6});
+    cubeTransform.translate(2,0,-6);
+    pyramidTransform.translate(-2,0,-6);
+
     projTransform.perspective(60, (float) width()/height(), nearPlane, farPlane);
 
     glGenBuffers(1, &vbo1);
@@ -171,14 +172,9 @@ void MainView::initializeGL() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid*)(sizeof(float) * 3));
 
-    QVector3D vector = {0,0,0};
-    qDebug() << vector;
-    qDebug() << projTransform.map(cubeTransform.map(vector));
-
-    qDebug() << projTransform;
-    qDebug() << cubeTransform;
-
     transformMatrix = shaderProgram.uniformLocation("modelTransform");
+    rotateMatrix = shaderProgram.uniformLocation("modelRotate");
+    scalingMatrix = shaderProgram.uniformLocation("modelScale");
     projectionMatrix = shaderProgram.uniformLocation("projectionTransform");
 }
 
@@ -208,6 +204,8 @@ void MainView::paintGL() {
 
     // Draw here
     glUniformMatrix4fv(projectionMatrix, 1, GL_FALSE, projTransform.data());
+    glUniformMatrix4fv(rotateMatrix, 1, GL_FALSE, rotation.data());
+    glUniformMatrix4fv(scalingMatrix, 1, GL_FALSE, scaling.data());
 
     glUniformMatrix4fv(transformMatrix, 1, GL_FALSE, cubeTransform.data());
     glBindVertexArray(vao1);
@@ -230,11 +228,6 @@ void MainView::paintGL() {
  */
 void MainView::resizeGL(int newWidth, int newHeight) 
 {
-    QVector3D vector = {0,0,0};
-    qDebug() << vector;
-    qDebug() << projTransform.map(cubeTransform.map(vector));
-
-    // TODO: Update projection to fit the new aspect ratio
     projTransform.setToIdentity();
     projTransform.perspective(60, (float) newWidth/newHeight, nearPlane, farPlane);
 }
@@ -244,13 +237,20 @@ void MainView::resizeGL(int newWidth, int newHeight)
 void MainView::setRotation(int rotateX, int rotateY, int rotateZ)
 {
     qDebug() << "Rotation changed to (" << rotateX << "," << rotateY << "," << rotateZ << ")";
-    Q_UNIMPLEMENTED();
+    rotation.setToIdentity();
+    rotation.rotate(rotateX, 1, 0, 0);
+    rotation.rotate(rotateY, 0, 1, 0);
+    rotation.rotate(rotateZ, 0, 0, 1);
+    update();
+    qDebug() << rotation.data();
 }
 
 void MainView::setScale(int scale)
 {
     qDebug() << "Scale changed to " << scale;
-    Q_UNIMPLEMENTED();
+    scaling.setToIdentity();
+    scaling.scale((float) scale/100);
+    update();
 }
 
 void MainView::setShadingMode(ShadingMode shading)

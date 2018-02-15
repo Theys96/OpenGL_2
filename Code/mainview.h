@@ -47,10 +47,14 @@ protected:
 
     QMatrix4x4 cubeTransform;
     QMatrix4x4 pyramidTransform;
+    QMatrix4x4 rotation;
+    QMatrix4x4 scaling;
     QMatrix4x4 projTransform;
 
     GLuint transformMatrix;
     GLuint projectionMatrix;
+    GLuint rotateMatrix;
+    GLuint scalingMatrix;
 
     int nearPlane = 0;
     int farPlane = 10;
