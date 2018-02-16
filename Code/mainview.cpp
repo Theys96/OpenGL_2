@@ -62,7 +62,7 @@ void MainView::initializeGL() {
     glEnable(GL_DEPTH_TEST);
 
     // Enable backface culling
-    //glEnable(GL_CULL_FACE);
+    glEnable(GL_CULL_FACE);
 
     // Default is GL_LESS
     glDepthFunc(GL_LEQUAL);
@@ -72,97 +72,33 @@ void MainView::initializeGL() {
 
     createShaderProgram();
 
-    MultiPolygon test = MultiPolygon(8);
-    test.setPoint(0, -1, -1, 1);
-    test.setPoint(1, 1, -1, 1);
-    test.setPoint(2, 1, -1, -1);
-    test.setPoint(3, -1, -1, -1);
-    test.setPoint(4, -1, 1, 1);
-    test.setPoint(5, 1, 1, 1);
-    test.setPoint(6, 1, 1, -1);
-    test.setPoint(7, -1, 1, -1);
-    test.addFace(0, 3, 2, 1);
-    test.addFace(0, 1, 5, 4);
-    test.addFace(7, 4, 5, 6);
-    test.addFace(7, 6, 2, 3);
-    test.addFace(7, 3, 0, 4);
-    test.addFace(5, 1, 2, 6);
-    qDebug() << test.getArrayVector();
-    qDebug() << test.numFloats();
+    MultiPolygon cube = MultiPolygon(8);
+    cube.setPoint(0, -1, -1, 1);
+    cube.setPoint(1, 1, -1, 1);
+    cube.setPoint(2, 1, -1, -1);
+    cube.setPoint(3, -1, -1, -1);
+    cube.setPoint(4, -1, 1, 1);
+    cube.setPoint(5, 1, 1, 1);
+    cube.setPoint(6, 1, 1, -1);
+    cube.setPoint(7, -1, 1, -1);
+    cube.addFace(0, 3, 2, 1);
+    cube.addFace(0, 1, 5, 4);
+    cube.addFace(7, 4, 5, 6);
+    cube.addFace(7, 6, 2, 3);
+    cube.addFace(7, 3, 0, 4);
+    cube.addFace(5, 1, 2, 6);
 
-    vertex cube[36];
-    cube[0] = {-1,-1,-1,0,0,0};
-    cube[1] = {-1,-1,1,0,0,1};
-    cube[2] = {-1,1,-1,0,1,0};
-
-    cube[3] = {-1,1,1,0,1,1};
-    cube[4] = {-1,-1,1,0,0,1};
-    cube[5] = {-1,1,-1,0,1,0};
-
-    cube[6] = {1,-1,-1,0,0,0};
-    cube[7] = {1,-1,1,0,0,1};
-    cube[8] = {1,1,-1,0,1,0};
-
-    cube[9] = {1,1,1,0,1,1};
-    cube[10] = {1,-1,1,0,0,1};
-    cube[11] = {1,1,-1,0,1,0};
-
-    cube[12] = {-1,-1,-1,0,0,0};
-    cube[13] = {-1,-1,1,0,0,1};
-    cube[14] = {1,-1,-1,1,0,0};
-
-    cube[15] = {1,-1,1,1,0,1};
-    cube[16] = {-1,-1,1,0,0,1};
-    cube[17] = {1,-1,-1,1,0,0};
-
-    cube[18] = {-1,1,-1,0,1,0};
-    cube[19] = {-1,1,1,0,1,1};
-    cube[20] = {1,1,-1,1,1,0};
-
-    cube[21] = {1,1,1,1,1,1};
-    cube[22] = {-1,1,1,0,1,1};
-    cube[23] = {1,1,-1,1,1,0};
-
-    cube[24] = {-1,-1,-1,0,0,0};
-    cube[25] = {-1,1,-1,0,1,0};
-    cube[26] = {1,-1,-1,1,0,0};
-
-    cube[27] = {1,1,-1,1,1,0};
-    cube[28] = {-1,1,-1,0,1,0};
-    cube[29] = {1,-1,-1,1,0,0};
-
-    cube[30] = {-1,-1,1,0,0,1};
-    cube[31] = {-1,1,1,0,1,1};
-    cube[32] = {1,-1,1,1,0,1};
-
-    cube[33] = {1,1,1,1,1,1};
-    cube[34] = {-1,1,1,0,1,1};
-    cube[35] = {1,-1,1,1,0,1};
-
-    vertex pyramid[18];
-    pyramid[0] = {-1,-1,-1,0,0,0};
-    pyramid[1] = {-1,-1,1,0,0,1};
-    pyramid[2] = {1,-1,-1,1,0,0};
-
-    pyramid[3] = {1,-1,1,1,0,1};
-    pyramid[4] = {-1,-1,1,0,0,1};
-    pyramid[5] = {1,-1,-1,1,0,0};
-
-    pyramid[6] = {0,1,0,0,1,0};
-    pyramid[7] = {-1,-1,-1,0,0,0};
-    pyramid[8] = {-1,-1,1,0,0,1};
-
-    pyramid[9] = {0,1,0,0,1,0};
-    pyramid[10] = {-1,-1,-1,0,0,0};
-    pyramid[11] = {1,-1,-1,1,0,0};
-
-    pyramid[12] = {0,1,0,0,1,0};
-    pyramid[13] = {1,-1,1,1,0,1};
-    pyramid[14] = {-1,-1,1,0,0,1};
-
-    pyramid[15] = {0,1,0,0,1,0};
-    pyramid[16] = {1,-1,1,1,0,1};
-    pyramid[17] = {1,-1,-1,1,0,0};
+    MultiPolygon pyramid = MultiPolygon(5);
+    pyramid.setPoint(0, -1, -1, 1);
+    pyramid.setPoint(1, 1, -1, 1);
+    pyramid.setPoint(2, 1, -1, -1);
+    pyramid.setPoint(3, -1, -1, -1);
+    pyramid.setPoint(4, 0, 1, 0);
+    pyramid.addFace(0, 3, 2, 1);
+    pyramid.addPolygon(0, 1, 4);
+    pyramid.addPolygon(1, 2, 4);
+    pyramid.addPolygon(2, 3, 4);
+    pyramid.addPolygon(3, 0, 4);
 
     cubeTransform.translate(2,0,-6);
     pyramidTransform.translate(-2,0,-6);
@@ -175,7 +111,7 @@ void MainView::initializeGL() {
 
     glBindVertexArray(vao1);
     glBindBuffer(GL_ARRAY_BUFFER, vbo1);
-    glBufferData(GL_ARRAY_BUFFER, test.numFloats()*sizeof(float), test.getArrayVector().data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, cube.numFloats()*sizeof(float), cube.getArrayVector().data(), GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
@@ -186,7 +122,7 @@ void MainView::initializeGL() {
 
     glBindVertexArray(vao2);
     glBindBuffer(GL_ARRAY_BUFFER, vbo2);
-    glBufferData(GL_ARRAY_BUFFER, 18*sizeof(vertex), pyramid, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, pyramid.numFloats()*sizeof(float), pyramid.getArrayVector().data(), GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
