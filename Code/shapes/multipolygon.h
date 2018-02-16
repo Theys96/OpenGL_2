@@ -11,7 +11,9 @@ public:
     MultiPolygon(int numPoints);
     void setPoint(int i, float x, float y, float z);
     void addPolygon(int i1, int i2, int i3);
-    QVector<float> getArrayData();
+    void addFace(int i1, int i2, int i3, int i4);
+    QVector<float> getArrayVector();
+    int numFloats();
 
 private:
     int numPoints;

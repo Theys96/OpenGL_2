@@ -1,6 +1,7 @@
 #include "mainview.h"
 #include "math.h"
-#include "vertex.h"
+#include "shapes/vertex.h"
+#include "shapes/multipolygon.h"
 
 #include <QDateTime>
 
@@ -70,6 +71,24 @@ void MainView::initializeGL() {
     glClearColor(0.2f, 0.5f, 0.7f, 0.0f);
 
     createShaderProgram();
+
+    MultiPolygon test = MultiPolygon(8);
+    test.setPoint(0, -1, -1, 1);
+    test.setPoint(1, 1, -1, 1);
+    test.setPoint(2, 1, -1, -1);
+    test.setPoint(3, -1, -1, -1);
+    test.setPoint(4, -1, 1, 1);
+    test.setPoint(5, 1, 1, 1);
+    test.setPoint(6, 1, 1, -1);
+    test.setPoint(7, -1, 1, -1);
+    test.addFace(0, 3, 2, 1);
+    test.addFace(0, 1, 5, 4);
+    test.addFace(7, 4, 5, 6);
+    test.addFace(7, 6, 2, 3);
+    test.addFace(7, 3, 0, 4);
+    test.addFace(5, 1, 2, 6);
+    qDebug() << test.getArrayVector();
+    qDebug() << test.numFloats();
 
     vertex cube[36];
     cube[0] = {-1,-1,-1,0,0,0};
@@ -153,9 +172,10 @@ void MainView::initializeGL() {
     glGenBuffers(1, &vbo1);
     glGenVertexArrays(1, &vao1);
 
+
     glBindVertexArray(vao1);
     glBindBuffer(GL_ARRAY_BUFFER, vbo1);
-    glBufferData(GL_ARRAY_BUFFER, 36*sizeof(vertex), cube, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, test.numFloats()*sizeof(float), test.getArrayVector().data(), GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
