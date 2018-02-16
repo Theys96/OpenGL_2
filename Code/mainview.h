@@ -2,6 +2,7 @@
 #define MAINVIEW_H
 
 #include "model.h"
+#include "mainwindow.h"
 
 #include <QKeyEvent>
 #include <QMouseEvent>
@@ -11,6 +12,7 @@
 #include <QOpenGLShaderProgram>
 #include <QTimer>
 #include <QVector3D>
+#include <QSlider>
 #include <memory>
 
 class MainView : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core {
@@ -30,9 +32,11 @@ public:
     MainView(QWidget *parent = 0);
     ~MainView();
 
+    void referenceUI(Ui::MainWindow* ref);
+
     // Functions for widget input events
     void setRotation(int rotateX, int rotateY, int rotateZ);
-    void setScale(int scale);
+    void setScale(int newScale);
     void setShadingMode(ShadingMode shading);
 
 protected:
@@ -63,6 +67,8 @@ protected:
 
     int nearPlane = 0;
     int farPlane = 10;
+    int scale = 100;
+    QSlider* scaleSlider;
 
     // Functions for keyboard input events
     void keyPressEvent(QKeyEvent *ev);

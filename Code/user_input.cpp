@@ -69,8 +69,11 @@ void MainView::mouseReleaseEvent(QMouseEvent *ev)
 // Triggered when clicking scrolling with the scroll wheel on the mouse
 void MainView::wheelEvent(QWheelEvent *ev)
 {
-    // Implement something
-    qDebug() << "Mouse wheel:" << ev->delta();
-
-    update();
+    int y = (ev->angleDelta()).y();
+    if (y > 0) {
+        setScale(scale+1);
+    }
+    if (y < 0) {
+        setScale(scale-1);
+    }
 }

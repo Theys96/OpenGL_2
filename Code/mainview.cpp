@@ -16,6 +16,7 @@ MainView::MainView(QWidget *parent) : QOpenGLWidget(parent) {
     qDebug() << "MainView constructor";
 
     connect(&timer, SIGNAL(timeout()), this, SLOT(update()));
+    scaleSlider = this->parent()->findChild<QSlider*>("ScaleSlider");
 }
 
 /**
@@ -111,10 +112,9 @@ void MainView::initializeGL() {
 
     glGenBuffers(1, &vbo1);
     glGenVertexArrays(1, &vao1);
-
     glBindVertexArray(vao1);
     glBindBuffer(GL_ARRAY_BUFFER, vbo1);
-    glBufferData(GL_ARRAY_BUFFER, cube.numFloats()*sizeof(vertex), cube.getArrayVector().data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, pyramid.numFloats()*sizeof(float), pyramid.getArrayVector().data(), GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
@@ -122,7 +122,6 @@ void MainView::initializeGL() {
 
     glGenBuffers(1, &vbo2);
     glGenVertexArrays(1, &vao2);
-
     glBindVertexArray(vao2);
     glBindBuffer(GL_ARRAY_BUFFER, vbo2);
     glBufferData(GL_ARRAY_BUFFER, pyramid.numFloats()*sizeof(float), pyramid.getArrayVector().data(), GL_STATIC_DRAW);
@@ -133,7 +132,6 @@ void MainView::initializeGL() {
 
     glGenBuffers(1, &vbo3);
     glGenVertexArrays(1, &vao3);
-
     glBindVertexArray(vao3);
     glBindBuffer(GL_ARRAY_BUFFER, vbo3);
     glBufferData(GL_ARRAY_BUFFER, sphereLen*sizeof(vertex), sphereVertices.data(), GL_STATIC_DRAW);
@@ -219,11 +217,12 @@ void MainView::setRotation(int rotateX, int rotateY, int rotateZ)
     qDebug() << rotation.data();
 }
 
-void MainView::setScale(int scale)
+void MainView::setScale(int newScale)
 {
-    qDebug() << "Scale changed to " << scale;
+    scale = fmax(1,fmin(200, newScale));
     scaling.setToIdentity();
-    scaling.scale((float) scale/100);
+    scaling.scale((float)scale/100);
+    scaleSlider->setValue(scale);
     update();
 }
 
