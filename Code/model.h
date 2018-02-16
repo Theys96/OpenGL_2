@@ -1,6 +1,8 @@
 #ifndef MODEL_H
 #define MODEL_H
 
+#include "shapes/vertex.h"
+
 #include <QString>
 #include <QStringList>
 #include <QVector>
@@ -19,10 +21,11 @@
 class Model
 {
 public:
-    Model(QString filename);
+    Model(QString filename, float scale);
 
     // Used for glDrawArrays()
     QVector<QVector3D> getVertices();
+    QVector<vertex> getVertexStructs();
     QVector<QVector3D> getNormals();
     QVector<QVector2D> getTextureCoords();
 
@@ -76,6 +79,7 @@ private:
 
     bool hNorms;
     bool hTexs;
+    float scale;
 };
 
 #endif // MODEL_H

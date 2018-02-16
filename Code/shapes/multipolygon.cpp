@@ -1,6 +1,6 @@
 #include "multipolygon.h"
 
-MultiPolygon::MultiPolygon(int numPoints) : numPoints(numPoints)
+MultiPolygon::MultiPolygon(int numPoints)
 {
     points = new vertex[numPoints];
 }
@@ -23,7 +23,7 @@ void MultiPolygon::addFace(int i1, int i2, int i3, int i4) {
 
 QVector<float> MultiPolygon::getArrayVector() {
     QVector<float> buffer;
-    for (int i = 0; i < polygons.size(); i++) {
+    for (int i = 0; i < polygons.length(); i++) {
         buffer.append(polygons[i].toArrayData());
     }
     return buffer;

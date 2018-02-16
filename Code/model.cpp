@@ -26,7 +26,7 @@ struct Vertex {
     }
 };
 
-Model::Model(QString filename) {
+Model::Model(QString filename, float scale) : scale(scale) {
     hNorms = false;
     hTexs = false;
 
@@ -86,6 +86,16 @@ void Model::unitize() {
 
 QVector<QVector3D> Model::getVertices() {
     return vertices;
+}
+
+QVector<vertex> Model::getVertexStructs() {
+    QVector<QVector3D> vector = getVertices();
+    QVector<vertex> buffer;
+    for (int i = 0; i < vector.length(); i++) {
+        vertex v = vertex(scale*(float)vector[i].x(), scale*(float)vector[i].y(), scale*(float)vector[i].z());
+        buffer.append(v);
+    }
+    return buffer;
 }
 
 QVector<QVector3D> Model::getNormals() {

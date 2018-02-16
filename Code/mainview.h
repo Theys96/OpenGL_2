@@ -44,9 +44,14 @@ protected:
     GLuint vao1;
     GLuint vbo2;
     GLuint vao2;
+    GLuint vbo3;
+    GLuint vao3;
+
+    int sphereLen;
 
     QMatrix4x4 cubeTransform;
     QMatrix4x4 pyramidTransform;
+    QMatrix4x4 sphereTransform;
     QMatrix4x4 rotation;
     QMatrix4x4 scaling;
     QMatrix4x4 projTransform;

@@ -16,7 +16,6 @@ public:
     int numFloats();
 
 private:
-    int numPoints;
     QVector<Polygon> polygons;
     vertex* points;
 };
