@@ -1,8 +1,6 @@
 #ifndef VERTEX
 #define VERTEX
 
-#endif // VERTEX
-
 struct vertex {
     float x;
     float y;
@@ -24,3 +22,6 @@ struct vertex {
     }
 
 };
+
+
+#endif // VERTEX
