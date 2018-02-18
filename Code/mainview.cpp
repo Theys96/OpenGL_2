@@ -114,7 +114,7 @@ void MainView::initializeGL() {
     glGenVertexArrays(1, &vao1);
     glBindVertexArray(vao1);
     glBindBuffer(GL_ARRAY_BUFFER, vbo1);
-    glBufferData(GL_ARRAY_BUFFER, pyramid.numFloats()*sizeof(float), pyramid.getArrayVector().data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, cube.numFloats()*sizeof(float), cube.getArrayVector().data(), GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
