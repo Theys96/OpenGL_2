@@ -1,12 +1,14 @@
-The object translations are a bit altered, to:
+# OpenGL_1
+### Computer Graphics assignment in OpenGL
 
-cube: (2,-1.5,-6);
-pyramid: (-2,-0.5,-6);
-sphere: (0,4,-15);
+For this exercise we implemented the rendering of a predefined cube and pyramid and a sphere from an .obj file.
 
-We have added and used the classes polygon and multipolygon. 
-The polygon class represents a single triangular polygon,
-while multipolygon represents a single shape by holding
-non-duplicate vertex coordinates and defining its polygon
-object members by the index numbers of these non-duplicate
-vertices. RBG values correspond with XYZ values respectively. 
+### Alterations and choices
+
+* The object translations are a bit altered to make better use of the entire viewing screen, to:
+    * cube: (2,-1.5,-6)
+    * pyramid: (-2,-0.5,-6)
+    * sphere: (0,4,-15)
+* We have added and used several abastraction classes in the refactoring process of the application.
+* The colors are directly derived from the original unit positions, XYZ for RGB respectively.
+* Scrolling can be used to control scaling.
