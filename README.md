@@ -10,5 +10,6 @@ For this exercise we implemented the rendering of a predefined cube and pyramid 
     * pyramid: (-2,-0.5,-6)
     * sphere: (0,4,-15)
 * We have added and used several abstraction classes in the refactoring process of the application. For example, we have specific classes for polygons, combinations of polygons, shapes for OpenGL and static definitions of standard shapes.
-* The colors are directly derived from the original unit positions, XYZ for RGB respectively.
-* Scrolling can be used to control scaling.
+* The colours are directly derived from the original unit positions, XYZ for RGB respectively.
+* All the controls work, except Shading. Additionally, scrolling can be used to control scaling.
+* The function unitize() has been implemented.
