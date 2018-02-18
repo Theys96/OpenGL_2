@@ -89,8 +89,6 @@ void MainView::initializeGL() {
     cube.addFace(7, 3, 0, 4);
     cube.addFace(5, 1, 2, 6);
 
-    cubeShape = Shape(cube);
-
     MultiPolygon pyramid = MultiPolygon(5);
     pyramid.setPoint(0, -1, -1, 1);
     pyramid.setPoint(1, 1, -1, 1);
@@ -107,9 +105,12 @@ void MainView::initializeGL() {
     QVector<vertex> sphereVertices = sphere.getVertexStructs();
     sphereLen = sphereVertices.length();
 
-    cubeTransform.translate(2,-1.5,-6);
+    cubeShape = Shape(cube);
+    sphereShape = Shape(":/models/sphere.obj", 0.04);
+
+    cubeShape.transformation.translate(2,-1.5,-6);
     pyramidTransform.translate(-2,-0.5,-6);
-    sphereTransform.translate(0,4,-15);
+    sphereShape.transformation.translate(0,4,-15);
     projTransform.perspective(60, (float) width()/height(), nearPlane, farPlane);
 
     glGenBuffers(1, cubeShape.vboPtr());
@@ -132,11 +133,11 @@ void MainView::initializeGL() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid*)(sizeof(float) * 3));
 
-    glGenBuffers(1, &vbo3);
-    glGenVertexArrays(1, &vao3);
-    glBindVertexArray(vao3);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo3);
-    glBufferData(GL_ARRAY_BUFFER, sphereLen*sizeof(vertex), sphereVertices.data(), GL_STATIC_DRAW);
+    glGenBuffers(1, sphereShape.vboPtr());
+    glGenVertexArrays(1, sphereShape.vaoPtr());
+    glBindVertexArray(*sphereShape.vboPtr());
+    glBindBuffer(GL_ARRAY_BUFFER, *sphereShape.vboPtr());
+    glBufferData(GL_ARRAY_BUFFER, sphereShape.getBufferSize(), sphereShape.getBufferData(), GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
@@ -177,11 +178,11 @@ void MainView::paintGL() {
     glUniformMatrix4fv(rotateMatrix, 1, GL_FALSE, rotation.data());
     glUniformMatrix4fv(scalingMatrix, 1, GL_FALSE, scaling.data());
 
-    glUniformMatrix4fv(transformMatrix, 1, GL_FALSE, sphereTransform.data());
-    glBindVertexArray(vao3);
-    glDrawArrays(GL_TRIANGLES, 0, sphereLen);
+    glUniformMatrix4fv(transformMatrix, 1, GL_FALSE, sphereShape.transformation.data());
+    glBindVertexArray(*sphereShape.vaoPtr());
+    glDrawArrays(GL_TRIANGLES, 0, sphereShape.numTriangles());
 
-    glUniformMatrix4fv(transformMatrix, 1, GL_FALSE, cubeTransform.data());
+    glUniformMatrix4fv(transformMatrix, 1, GL_FALSE, cubeShape.transformation.data());
     glBindVertexArray(*cubeShape.vaoPtr());
     glDrawArrays(GL_TRIANGLES, 0, cubeShape.numTriangles());
 

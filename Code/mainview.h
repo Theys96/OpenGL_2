@@ -53,6 +53,7 @@ protected:
     GLuint vao3;
 
     Shape cubeShape;
+    Shape sphereShape;
 
     int sphereLen;
 

@@ -22,7 +22,7 @@ public:
     GLuint* vboPtr();
     GLuint* vaoPtr();
 
-    //QMatrix4x4 transformMatrix;
+    QMatrix4x4 transformation;
 
 private:
     GLuint vbo;
