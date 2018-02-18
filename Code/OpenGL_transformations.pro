@@ -16,18 +16,20 @@ SOURCES += main.cpp\
     mainwindow.cpp \
     mainview.cpp \
     user_input.cpp \
-    model.cpp \
     shapes/polygon.cpp \
     shapes/multipolygon.cpp \
-    shapes/shape.cpp
+    shapes/shape.cpp \
+    shapes/model.cpp \
+    shapes/simpleshapes.cpp
 
 HEADERS  += mainwindow.h \
     mainview.h \
-    model.h \
     shapes/polygon.h \
     shapes/vertex.h \
     shapes/multipolygon.h \
-    shapes/shape.h
+    shapes/shape.h \
+    shapes/model.h \
+    shapes/simpleshapes.h
 
 FORMS    += mainwindow.ui
 

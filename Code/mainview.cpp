@@ -2,6 +2,7 @@
 #include "math.h"
 #include "shapes/vertex.h"
 #include "shapes/multipolygon.h"
+#include "shapes/simpleshapes.h"
 
 #include <QDateTime>
 
@@ -16,6 +17,8 @@ MainView::MainView(QWidget *parent) : QOpenGLWidget(parent) {
     qDebug() << "MainView constructor";
 
     connect(&timer, SIGNAL(timeout()), this, SLOT(update()));
+
+    // Kind of hackish way to be able to control the scale slider
     scaleSlider = this->parent()->findChild<QSlider*>("ScaleSlider");
 }
 
@@ -73,47 +76,24 @@ void MainView::initializeGL() {
 
     createShaderProgram();
 
-    MultiPolygon cube = MultiPolygon(8);
-    cube.setPoint(0, -1, -1, 1);
-    cube.setPoint(1, 1, -1, 1);
-    cube.setPoint(2, 1, -1, -1);
-    cube.setPoint(3, -1, -1, -1);
-    cube.setPoint(4, -1, 1, 1);
-    cube.setPoint(5, 1, 1, 1);
-    cube.setPoint(6, 1, 1, -1);
-    cube.setPoint(7, -1, 1, -1);
-    cube.addFace(0, 3, 2, 1);
-    cube.addFace(0, 1, 5, 4);
-    cube.addFace(7, 4, 5, 6);
-    cube.addFace(7, 6, 2, 3);
-    cube.addFace(7, 3, 0, 4);
-    cube.addFace(5, 1, 2, 6);
-
-    MultiPolygon pyramid = MultiPolygon(5);
-    pyramid.setPoint(0, -1, -1, 1);
-    pyramid.setPoint(1, 1, -1, 1);
-    pyramid.setPoint(2, 1, -1, -1);
-    pyramid.setPoint(3, -1, -1, -1);
-    pyramid.setPoint(4, 0, 1, 0);
-    pyramid.addFace(0, 3, 2, 1);
-    pyramid.addPolygon(0, 1, 4);
-    pyramid.addPolygon(1, 2, 4);
-    pyramid.addPolygon(2, 3, 4);
-    pyramid.addPolygon(3, 0, 4);
-
-    Shape cubeShape = Shape(cube);
-    Shape pyramidShape = Shape(pyramid);
-    Shape sphereShape = Shape(":/models/sphere.obj", 0.04);
-
+    // Cube, from definition
+    Shape cubeShape = SimpleShapes::getCube();
     cubeShape.transformation.translate(2,-1.5,-6);
+
+    // Pyramid, from definition
+    Shape pyramidShape = SimpleShapes::getPyramid();
     pyramidShape.transformation.translate(-2,-0.5,-6);
+
+    // Sphere, from file
+    Shape sphereShape = Shape(":/models/sphere.obj", 0.04);
     sphereShape.transformation.translate(0,4,-15);
-    projection.perspective(60, (float) width()/height(), nearPlane, farPlane);
 
-    shapes.append(cubeShape);
-    shapes.append(pyramidShape);
+    // Combine shapes in a vector
     shapes.append(sphereShape);
+    shapes.append(pyramidShape);
+    shapes.append(cubeShape);
 
+    // Bind shape array buffers
     for (int i = 0; i < shapes.length(); i++) {
         glGenBuffers(1, &(shapes[i].vbo));
         glGenVertexArrays(1, &(shapes[i].vao));
@@ -126,6 +106,8 @@ void MainView::initializeGL() {
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid*)(sizeof(float) * 3));
     }
 
+    // Define perspective, allocate transformation matrices
+    projection.perspective(60, (float) width()/height(), nearPlane, farPlane);
     transformMatrix = shaderProgram.uniformLocation("modelTransform");
     rotateMatrix = shaderProgram.uniformLocation("modelRotate");
     scalingMatrix = shaderProgram.uniformLocation("modelScale");
@@ -156,11 +138,12 @@ void MainView::paintGL() {
 
     shaderProgram.bind();
 
-    // Draw here
+    // Transformations
     glUniformMatrix4fv(projectionMatrix, 1, GL_FALSE, projection.data());
     glUniformMatrix4fv(rotateMatrix, 1, GL_FALSE, rotation.data());
     glUniformMatrix4fv(scalingMatrix, 1, GL_FALSE, scaling.data());
 
+    // Shapes
     for (int i = 0; i < shapes.length(); i++) {
         glUniformMatrix4fv(transformMatrix, 1, GL_FALSE, shapes[i].transformation.data());
         glBindVertexArray(shapes[i].vao);
@@ -188,13 +171,11 @@ void MainView::resizeGL(int newWidth, int newHeight)
 
 void MainView::setRotation(int rotateX, int rotateY, int rotateZ)
 {
-    qDebug() << "Rotation changed to (" << rotateX << "," << rotateY << "," << rotateZ << ")";
     rotation.setToIdentity();
     rotation.rotate(rotateX, 1, 0, 0);
     rotation.rotate(rotateY, 0, 1, 0);
     rotation.rotate(rotateZ, 0, 0, 1);
     update();
-    qDebug() << rotation.data();
 }
 
 void MainView::setScale(int newScale)

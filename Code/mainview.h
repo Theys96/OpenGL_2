@@ -1,7 +1,6 @@
 #ifndef MAINVIEW_H
 #define MAINVIEW_H
 
-#include "model.h"
 #include "mainwindow.h"
 #include "shapes/shape.h"
 

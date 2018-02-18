@@ -8,7 +8,7 @@
 
 #include "shapes/multipolygon.h"
 #include "shapes/vertex.h"
-#include "model.h"
+#include "shapes/model.h"
 
 class Shape
 {
