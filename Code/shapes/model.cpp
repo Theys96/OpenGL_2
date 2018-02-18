@@ -1,8 +1,10 @@
 #include "model.h"
+#include "math.h"
 
 #include <QDebug>
 #include <QFile>
 #include <QTextStream>
+#include <QOpenGLFunctions_3_3_Core>
 
 // A Private Vertex class for vertex comparison
 // DO NOT include "vertex.h" or something similar in this file
@@ -81,7 +83,24 @@ Model::Model(QString filename, float scale) : scale(scale) {
  *
  */
 void Model::unitize() {
-    qDebug() << "TODO: implement this yourself";
+   // First, we find the largest value in absolute terms
+    float val;
+    float largest = 0;
+    GLuint numVertices = vertices.length();
+
+    for (GLuint i = 0; i < numVertices; i++) {
+        val = fmax(fmax(fabs(vertices[i].x()), fabs(vertices[i].y())), fabs(vertices[i].z()));
+        largest = (val > largest ? val : largest);
+    }
+
+    largest /= 2;
+
+    // Next, adjust all values for this largest value
+    for (GLuint i = 0; i < numVertices; i++) {
+        vertices[i].setX(vertices[i].x()/largest);
+        vertices[i].setY(vertices[i].y()/largest);
+        vertices[i].setZ(vertices[i].z()/largest);
+    }
 }
 
 QVector<QVector3D> Model::getVertices() {

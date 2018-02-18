@@ -85,7 +85,7 @@ void MainView::initializeGL() {
     pyramidShape.transformation.translate(-2,-0.5,-6);
 
     // Sphere, from file
-    Shape sphereShape = Shape(":/models/sphere.obj", 0.04);
+    Shape sphereShape = Shape(":/models/sphere.obj");
     sphereShape.transformation.translate(0,4,-15);
 
     // Combine shapes in a vector

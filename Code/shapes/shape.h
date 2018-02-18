@@ -14,6 +14,7 @@ class Shape
 {
 public:
     Shape();
+    Shape(QString filename);
     Shape(QString filename, float scale);
     Shape(MultiPolygon object);
     void* getBufferData();

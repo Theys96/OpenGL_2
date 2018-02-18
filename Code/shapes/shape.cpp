@@ -2,6 +2,13 @@
 
 Shape::Shape() {}
 
+Shape::Shape(QString filename) {
+    Model model = Model(filename);
+    model.unitize();
+    vertices = model.getVertexStructs();
+    storageMode = VERTICES;
+}
+
 Shape::Shape(QString filename, float scale) {
     Model model = Model(filename, scale);
     vertices = model.getVertexStructs();

@@ -21,7 +21,7 @@
 class Model
 {
 public:
-    Model(QString filename, float scale);
+    Model(QString filename, float scale = 1);
 
     // Used for glDrawArrays()
     QVector<QVector3D> getVertices();
