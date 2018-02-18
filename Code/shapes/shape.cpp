@@ -43,10 +43,3 @@ GLuint Shape::numTriangles() {
     return 0;
 }
 
-GLuint* Shape::vboPtr() {
-    return &vbo;
-}
-
-GLuint* Shape::vaoPtr() {
-    return &vao;
-}

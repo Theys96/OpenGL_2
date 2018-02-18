@@ -19,14 +19,12 @@ public:
     void* getBufferData();
     GLuint getBufferSize();
     GLuint numTriangles();
-    GLuint* vboPtr();
-    GLuint* vaoPtr();
+    GLuint vbo;
+    GLuint vao;
 
     QMatrix4x4 transformation;
 
 private:
-    GLuint vbo;
-    GLuint vao;
     QVector<float> floats;
     QVector<vertex> vertices;
     enum StorageMode : GLuint
