@@ -3,6 +3,7 @@
 
 #include "model.h"
 #include "mainwindow.h"
+#include "shapes/shape.h"
 
 #include <QKeyEvent>
 #include <QMouseEvent>
@@ -50,6 +51,8 @@ protected:
     GLuint vao2;
     GLuint vbo3;
     GLuint vao3;
+
+    Shape cubeShape;
 
     int sphereLen;
 
