@@ -1,10 +1,10 @@
 #include "mainview.h"
-#include "math.h"
-#include "shapes/vertex.h"
-#include "shapes/multipolygon.h"
-#include "shapes/simpleshapes.h"
+#include "model.h"
+#include "vertex.h"
 
+#include <math.h>
 #include <QDateTime>
+
 
 /**
  * @brief MainView::MainView
@@ -17,9 +17,6 @@ MainView::MainView(QWidget *parent) : QOpenGLWidget(parent) {
     qDebug() << "MainView constructor";
 
     connect(&timer, SIGNAL(timeout()), this, SLOT(update()));
-
-    // Kind of hackish way to be able to control the scale slider
-    scaleSlider = this->parent()->findChild<QSlider*>("ScaleSlider");
 }
 
 /**
@@ -31,9 +28,13 @@ MainView::MainView(QWidget *parent) : QOpenGLWidget(parent) {
  *
  */
 MainView::~MainView() {
+    makeCurrent();
     debugLogger->stopLogging();
+    delete debugLogger;
 
     qDebug() << "MainView destructor";
+    destroyModelBuffers();
+    doneCurrent();
 }
 
 // --- OpenGL initialization
@@ -62,56 +63,17 @@ void MainView::initializeGL() {
     glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
     qDebug() << ":: Using OpenGL" << qPrintable(glVersion);
 
-    // Enable depth buffer
     glEnable(GL_DEPTH_TEST);
-
-    // Enable backface culling
     glEnable(GL_CULL_FACE);
-
-    // Default is GL_LESS
     glDepthFunc(GL_LEQUAL);
-
-    // Set the color of the screen to be black on clear (new frame)
-    glClearColor(0.2f, 0.5f, 0.7f, 0.0f);
+    glClearColor(0.0, 1.0, 0.0, 1.0);
 
     createShaderProgram();
+    loadMesh();
 
-    // Cube, from definition
-    Shape cubeShape = SimpleShapes::getCube();
-    cubeShape.transformation.translate(2,-1.5,-6);
-
-    // Pyramid, from definition
-    Shape pyramidShape = SimpleShapes::getPyramid();
-    pyramidShape.transformation.translate(-2,-0.5,-6);
-
-    // Sphere, from file
-    Shape sphereShape = Shape(":/models/sphere.obj");
-    sphereShape.transformation.translate(0,4,-15);
-
-    // Combine shapes in a vector
-    shapes.append(sphereShape);
-    shapes.append(pyramidShape);
-    shapes.append(cubeShape);
-
-    // Bind shape array buffers
-    for (int i = 0; i < shapes.length(); i++) {
-        glGenBuffers(1, &(shapes[i].vbo));
-        glGenVertexArrays(1, &(shapes[i].vao));
-        glBindVertexArray(shapes[i].vao);
-        glBindBuffer(GL_ARRAY_BUFFER, shapes[i].vbo);
-        glBufferData(GL_ARRAY_BUFFER, shapes[i].getBufferSize(), shapes[i].getBufferData(), GL_STATIC_DRAW);
-        glEnableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid*)(sizeof(float) * 3));
-    }
-
-    // Define perspective, allocate transformation matrices
-    projection.perspective(60, (float) width()/height(), nearPlane, farPlane);
-    transformMatrix = shaderProgram.uniformLocation("modelTransform");
-    rotateMatrix = shaderProgram.uniformLocation("modelRotate");
-    scalingMatrix = shaderProgram.uniformLocation("modelScale");
-    projectionMatrix = shaderProgram.uniformLocation("projectionTransform");
+    // Initialize transformations
+    updateProjectionTransform();
+    updateModelTransforms();
 }
 
 void MainView::createShaderProgram()
@@ -122,7 +84,56 @@ void MainView::createShaderProgram()
     shaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment,
                                            ":/shaders/fragshader.glsl");
     shaderProgram.link();
+
+    // Get the uniforms
+    uniformModelViewTransform = shaderProgram.uniformLocation("modelViewTransform");
+    uniformProjectionTransform = shaderProgram.uniformLocation("projectionTransform");
 }
+
+void MainView::loadMesh()
+{
+    Model model(":/models/cat.obj");
+    QVector<QVector3D> vertexCoords = model.getVertices();
+    QVector<QVector3D> vertexNormals = model.getNormals();
+
+    QVector<float> meshData;
+    meshData.reserve(2 * 3 * vertexCoords.size());
+
+    for (int i = 0; i < vertexCoords.length(); i++)
+    {
+        meshData.append(vertexCoords[i].x());
+        meshData.append(vertexCoords[i].y());
+        meshData.append(vertexCoords[i].z());
+        meshData.append(vertexNormals[i].x());
+        meshData.append(vertexNormals[i].y());
+        meshData.append(vertexNormals[i].z());
+    }
+
+    meshSize = vertexCoords.size();
+
+    // Generate VAO
+    glGenVertexArrays(1, &meshVAO);
+    glBindVertexArray(meshVAO);
+
+    // Generate VBO
+    glGenBuffers(1, &meshVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, meshVBO);
+
+    // Write the data to the buffer
+    glBufferData(GL_ARRAY_BUFFER, meshData.size() * sizeof(float), meshData.data(), GL_STATIC_DRAW);
+
+    // Set vertex coordinates to location 0
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
+    glEnableVertexAttribArray(0);
+
+    // Set colour coordinates to location 1
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+}
+
 
 // --- OpenGL drawing
 
@@ -134,21 +145,17 @@ void MainView::createShaderProgram()
  */
 void MainView::paintGL() {
     // Clear the screen before rendering
+    glClearColor(0.2f, 0.5f, 0.7f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     shaderProgram.bind();
 
-    // Transformations
-    glUniformMatrix4fv(projectionMatrix, 1, GL_FALSE, projection.data());
-    glUniformMatrix4fv(rotateMatrix, 1, GL_FALSE, rotation.data());
-    glUniformMatrix4fv(scalingMatrix, 1, GL_FALSE, scaling.data());
+    // Set the projection matrix
+    glUniformMatrix4fv(uniformProjectionTransform, 1, GL_FALSE, projectionTransform.data());
+    glUniformMatrix4fv(uniformModelViewTransform, 1, GL_FALSE, meshTransform.data());
 
-    // Shapes
-    for (int i = 0; i < shapes.length(); i++) {
-        glUniformMatrix4fv(transformMatrix, 1, GL_FALSE, shapes[i].transformation.data());
-        glBindVertexArray(shapes[i].vao);
-        glDrawArrays(GL_TRIANGLES, 0, shapes[i].numTriangles());
-    }
+    glBindVertexArray(meshVAO);
+    glDrawArrays(GL_TRIANGLES, 0, meshSize);
 
     shaderProgram.release();
 }
@@ -161,30 +168,50 @@ void MainView::paintGL() {
  * @param newWidth
  * @param newHeight
  */
-void MainView::resizeGL(int newWidth, int newHeight) 
+void MainView::resizeGL(int newWidth, int newHeight)
 {
-    projection.setToIdentity();
-    projection.perspective(60, (float) newWidth/newHeight, nearPlane, farPlane);
+    Q_UNUSED(newWidth)
+    Q_UNUSED(newHeight)
+    updateProjectionTransform();
+}
+
+void MainView::updateProjectionTransform()
+{
+    float aspect_ratio = static_cast<float>(width()) / static_cast<float>(height());
+    projectionTransform.setToIdentity();
+    projectionTransform.perspective(60, aspect_ratio, 0.2, 20);
+}
+
+void MainView::updateModelTransforms()
+{
+    meshTransform.setToIdentity();
+    meshTransform.translate(0, -1, -2);
+    meshTransform.scale(scale);
+    meshTransform.rotate(QQuaternion::fromEulerAngles(rotation));
+
+    update();
+}
+
+// --- OpenGL cleanup helpers
+
+void MainView::destroyModelBuffers()
+{
+    glDeleteBuffers(1, &meshVBO);
+    glDeleteVertexArrays(1, &meshVAO);
 }
 
 // --- Public interface
 
 void MainView::setRotation(int rotateX, int rotateY, int rotateZ)
 {
-    rotation.setToIdentity();
-    rotation.rotate(rotateX, 1, 0, 0);
-    rotation.rotate(rotateY, 0, 1, 0);
-    rotation.rotate(rotateZ, 0, 0, 1);
-    update();
+    rotation = { static_cast<float>(rotateX), static_cast<float>(rotateY), static_cast<float>(rotateZ) };
+    updateModelTransforms();
 }
 
 void MainView::setScale(int newScale)
 {
-    scale = fmax(1,fmin(200, newScale));
-    scaling.setToIdentity();
-    scaling.scale((float)scale/100);
-    scaleSlider->setValue(scale);
-    update();
+    scale = static_cast<float>(newScale) / 100.f;
+    updateModelTransforms();
 }
 
 void MainView::setShadingMode(ShadingMode shading)
@@ -205,3 +232,4 @@ void MainView::setShadingMode(ShadingMode shading)
 void MainView::onMessageLogged( QOpenGLDebugMessage Message ) {
     qDebug() << " → Log:" << Message;
 }
+

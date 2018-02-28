@@ -1,8 +1,7 @@
 #ifndef MAINVIEW_H
 #define MAINVIEW_H
 
-#include "mainwindow.h"
-#include "shapes/shape.h"
+#include "model.h"
 
 #include <QKeyEvent>
 #include <QMouseEvent>
@@ -12,8 +11,9 @@
 #include <QOpenGLShaderProgram>
 #include <QTimer>
 #include <QVector3D>
-#include <QSlider>
+#include <QMatrix4x4>
 #include <memory>
+
 
 class MainView : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core {
     Q_OBJECT
@@ -22,6 +22,19 @@ class MainView : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core {
     QTimer timer; // timer used for animation
 
     QOpenGLShaderProgram shaderProgram;
+    GLint uniformModelViewTransform;
+    GLint uniformProjectionTransform;
+
+    // Mesh values
+    GLuint meshVAO;
+    GLuint meshVBO;
+    GLuint meshSize;
+    QMatrix4x4 meshTransform;
+
+    // Transforms
+    float scale = 1.f;
+    QVector3D rotation;
+    QMatrix4x4 projectionTransform;
 
 public:
     enum ShadingMode : GLuint
@@ -32,33 +45,15 @@ public:
     MainView(QWidget *parent = 0);
     ~MainView();
 
-    void referenceUI(Ui::MainWindow* ref);
-
     // Functions for widget input events
     void setRotation(int rotateX, int rotateY, int rotateZ);
-    void setScale(int newScale);
+    void setScale(int scale);
     void setShadingMode(ShadingMode shading);
 
 protected:
     void initializeGL();
     void resizeGL(int newWidth, int newHeight);
     void paintGL();
-
-    QVector<Shape> shapes;
-
-    QMatrix4x4 rotation;
-    QMatrix4x4 scaling;
-    QMatrix4x4 projection;
-
-    GLuint transformMatrix;
-    GLuint projectionMatrix;
-    GLuint rotateMatrix;
-    GLuint scalingMatrix;
-
-    int nearPlane = 0;
-    int farPlane = 10;
-    int scale = 100;
-    QSlider* scaleSlider;
 
     // Functions for keyboard input events
     void keyPressEvent(QKeyEvent *ev);
@@ -76,7 +71,12 @@ private slots:
 
 private:
     void createShaderProgram();
+    void loadMesh();
 
+    void destroyModelBuffers();
+
+    void updateProjectionTransform();
+    void updateModelTransforms();
 };
 
 #endif // MAINVIEW_H

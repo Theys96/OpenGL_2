@@ -1,10 +1,9 @@
 #include "model.h"
-#include "math.h"
 
 #include <QDebug>
 #include <QFile>
 #include <QTextStream>
-#include <QOpenGLFunctions_3_3_Core>
+
 
 // A Private Vertex class for vertex comparison
 // DO NOT include "vertex.h" or something similar in this file
@@ -28,10 +27,7 @@ struct Vertex {
     }
 };
 
-Model::Model(QString filename, float scale) : scale(scale) {
-    hNorms = false;
-    hTexs = false;
-
+Model::Model(QString filename) {
     qDebug() << ":: Loading model:" << filename;
     QFile file(filename);
     if(file.open(QIODevice::ReadOnly)) {
@@ -83,38 +79,11 @@ Model::Model(QString filename, float scale) : scale(scale) {
  *
  */
 void Model::unitize() {
-   // First, we find the largest value in absolute terms
-    float val;
-    float largest = 0;
-    GLuint numVertices = vertices.length();
-
-    for (GLuint i = 0; i < numVertices; i++) {
-        val = fmax(fmax(fabs(vertices[i].x()), fabs(vertices[i].y())), fabs(vertices[i].z()));
-        largest = (val > largest ? val : largest);
-    }
-
-    largest /= 2;
-
-    // Next, adjust all values for this largest value
-    for (GLuint i = 0; i < numVertices; i++) {
-        vertices[i].setX(vertices[i].x()/largest);
-        vertices[i].setY(vertices[i].y()/largest);
-        vertices[i].setZ(vertices[i].z()/largest);
-    }
+    qDebug() << "TODO: implement this yourself";
 }
 
 QVector<QVector3D> Model::getVertices() {
     return vertices;
-}
-
-QVector<vertex> Model::getVertexStructs() {
-    QVector<QVector3D> vector = getVertices();
-    QVector<vertex> buffer;
-    for (int i = 0; i < vector.length(); i++) {
-        vertex v = vertex(scale*(float)vector[i].x(), scale*(float)vector[i].y(), scale*(float)vector[i].z());
-        buffer.append(v);
-    }
-    return buffer;
 }
 
 QVector<QVector3D> Model::getNormals() {
@@ -178,6 +147,7 @@ QVector<float> Model::getVNTInterleaved() {
     return buffer;
 }
 
+// Throws when there are no normals or texture values
 QVector<float> Model::getVNInterleaved_indexed() {
     QVector<float> buffer;
 
@@ -195,6 +165,7 @@ QVector<float> Model::getVNInterleaved_indexed() {
     return buffer;
 }
 
+// Throws when there are no normals or texture values
 QVector<float> Model::getVNTInterleaved_indexed() {
     QVector<float> buffer;
 
@@ -214,8 +185,6 @@ QVector<float> Model::getVNTInterleaved_indexed() {
 
     return buffer;
 }
-
-
 
 /**
  * @brief Model::getNumTriangles
