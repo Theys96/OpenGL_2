@@ -13,21 +13,21 @@ QVector<float> Polygon::toArrayData() {
     buffer.append(v1.x);
     buffer.append(v1.y);
     buffer.append(v1.z);
-    buffer.append(v1.r);
-    buffer.append(v1.g);
-    buffer.append(v1.b);
+    buffer.append(v1.nx);
+    buffer.append(v1.ny);
+    buffer.append(v1.nz);
     buffer.append(v2.x);
     buffer.append(v2.y);
     buffer.append(v2.z);
-    buffer.append(v2.r);
-    buffer.append(v2.g);
-    buffer.append(v2.b);
+    buffer.append(v2.nx);
+    buffer.append(v2.ny);
+    buffer.append(v2.nz);
     buffer.append(v3.x);
     buffer.append(v3.y);
     buffer.append(v3.z);
-    buffer.append(v3.r);
-    buffer.append(v3.g);
-    buffer.append(v3.b);
+    buffer.append(v3.nx);
+    buffer.append(v3.ny);
+    buffer.append(v3.nz);
 
     return buffer;
 }

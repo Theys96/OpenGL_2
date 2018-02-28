@@ -33,6 +33,11 @@ MainView::MainView(QWidget *parent) : QOpenGLWidget(parent) {
 MainView::~MainView() {
     debugLogger->stopLogging();
 
+    for (int i = 0; i < shapes.length(); i++) {
+        glDeleteBuffers(1, &(shapes[i].vbo));
+        glDeleteVertexArrays(1, &(shapes[i].vao));
+    }
+
     qDebug() << "MainView destructor";
 }
 
@@ -76,22 +81,12 @@ void MainView::initializeGL() {
 
     createShaderProgram();
 
-    // Cube, from definition
-    Shape cubeShape = SimpleShapes::getCube();
-    cubeShape.transformation.translate(2,-1.5,-6);
-
-    // Pyramid, from definition
-    Shape pyramidShape = SimpleShapes::getPyramid();
-    pyramidShape.transformation.translate(-2,-0.5,-6);
-
     // Sphere, from file
-    Shape sphereShape = Shape(":/models/sphere.obj");
-    sphereShape.transformation.translate(0,4,-15);
+    Shape sphereShape = Shape(":/models/cat.obj");
+    sphereShape.transformation.translate(0,-2,-5);
 
     // Combine shapes in a vector
     shapes.append(sphereShape);
-    shapes.append(pyramidShape);
-    shapes.append(cubeShape);
 
     // Bind shape array buffers
     for (int i = 0; i < shapes.length(); i++) {

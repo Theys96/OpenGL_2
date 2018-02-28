@@ -109,9 +109,10 @@ QVector<QVector3D> Model::getVertices() {
 
 QVector<vertex> Model::getVertexStructs() {
     QVector<QVector3D> vector = getVertices();
+    QVector<QVector3D> normals = getNormals();
     QVector<vertex> buffer;
     for (int i = 0; i < vector.length(); i++) {
-        vertex v = vertex(scale*(float)vector[i].x(), scale*(float)vector[i].y(), scale*(float)vector[i].z());
+        vertex v = vertex(scale*(float)vector[i].x(), scale*(float)vector[i].y(), scale*(float)vector[i].z(), (float)normals[i].x(), (float)normals[i].y(), (float)normals[i].z());
         buffer.append(v);
     }
     return buffer;
