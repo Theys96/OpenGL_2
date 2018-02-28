@@ -51,9 +51,6 @@ protected:
     QMatrix4x4 projection;
 
     GLuint transformMatrix;
-    GLuint projectionMatrix;
-    GLuint rotateMatrix;
-    GLuint scalingMatrix;
 
     int nearPlane = 0;
     int farPlane = 10;

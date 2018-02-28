@@ -109,9 +109,6 @@ void MainView::initializeGL() {
     // Define perspective, allocate transformation matrices
     projection.perspective(60, (float) width()/height(), nearPlane, farPlane);
     transformMatrix = shaderProgram.uniformLocation("modelTransform");
-    rotateMatrix = shaderProgram.uniformLocation("modelRotate");
-    scalingMatrix = shaderProgram.uniformLocation("modelScale");
-    projectionMatrix = shaderProgram.uniformLocation("projectionTransform");
 }
 
 void MainView::createShaderProgram()
@@ -139,13 +136,12 @@ void MainView::paintGL() {
     shaderProgram.bind();
 
     // Transformations
-    glUniformMatrix4fv(projectionMatrix, 1, GL_FALSE, projection.data());
-    glUniformMatrix4fv(rotateMatrix, 1, GL_FALSE, rotation.data());
-    glUniformMatrix4fv(scalingMatrix, 1, GL_FALSE, scaling.data());
+    QMatrix4x4 multiMatrix;
 
     // Shapes
     for (int i = 0; i < shapes.length(); i++) {
-        glUniformMatrix4fv(transformMatrix, 1, GL_FALSE, shapes[i].transformation.data());
+        multiMatrix = projection * shapes[i].transformation * rotation * scaling;
+        glUniformMatrix4fv(transformMatrix, 1, GL_FALSE, multiMatrix.data());
         glBindVertexArray(shapes[i].vao);
         glDrawArrays(GL_TRIANGLES, 0, shapes[i].numTriangles());
     }
