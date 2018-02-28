@@ -9,6 +9,7 @@ layout (location = 1) in vec3 vertNormal_in;
 
 // Specify the Uniforms of the vertex shader
  uniform mat4 modelViewTransform;
+ uniform mat3 normalTransform;
  uniform mat4 projectionTransform;
 
 // Specify the output of the vertex stage
@@ -18,5 +19,5 @@ void main()
 {
     // gl_Position is the output (a vec4) of the vertex shader
     gl_Position = projectionTransform * modelViewTransform * vec4(vertCoordinates_in, 1.0);
-    vertNormal = vertNormal_in;
+    vertNormal = normalize(normalTransform * vertNormal_in);
 }

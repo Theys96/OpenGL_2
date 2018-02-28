@@ -87,6 +87,7 @@ void MainView::createShaderProgram()
 
     // Get the uniforms
     uniformModelViewTransform = shaderProgram.uniformLocation("modelViewTransform");
+    uniformNormalTransform = shaderProgram.uniformLocation("normalTransform");
     uniformProjectionTransform = shaderProgram.uniformLocation("projectionTransform");
 }
 
@@ -153,6 +154,7 @@ void MainView::paintGL() {
     // Set the projection matrix
     glUniformMatrix4fv(uniformProjectionTransform, 1, GL_FALSE, projectionTransform.data());
     glUniformMatrix4fv(uniformModelViewTransform, 1, GL_FALSE, meshTransform.data());
+    glUniformMatrix3fv(uniformNormalTransform, 1, GL_FALSE, normalTransform.data());
 
     glBindVertexArray(meshVAO);
     glDrawArrays(GL_TRIANGLES, 0, meshSize);
@@ -185,9 +187,11 @@ void MainView::updateProjectionTransform()
 void MainView::updateModelTransforms()
 {
     meshTransform.setToIdentity();
-    meshTransform.translate(0, -1, -2);
+    meshTransform.translate(0, -0.5, -2);
     meshTransform.scale(scale);
     meshTransform.rotate(QQuaternion::fromEulerAngles(rotation));
+
+    normalTransform = meshTransform.normalMatrix();
 
     update();
 }
