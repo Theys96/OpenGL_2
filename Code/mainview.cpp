@@ -92,20 +92,21 @@ void MainView::createShaderProgram()
 
 void MainView::loadMesh()
 {
-    Model model(":/models/cube.obj");
+    Model model(":/models/cat.obj");
     QVector<QVector3D> vertexCoords = model.getVertices();
+    QVector<QVector3D> vertexNormals = model.getNormals();
 
     QVector<float> meshData;
     meshData.reserve(2 * 3 * vertexCoords.size());
 
-    for (auto coord : vertexCoords)
+    for (int i = 0; i < vertexCoords.length(); i++)
     {
-        meshData.append(coord.x());
-        meshData.append(coord.y());
-        meshData.append(coord.z());
-        meshData.append(static_cast<float>(rand()) / RAND_MAX);
-        meshData.append(static_cast<float>(rand()) / RAND_MAX);
-        meshData.append(static_cast<float>(rand()) / RAND_MAX);
+        meshData.append(vertexCoords[i].x());
+        meshData.append(vertexCoords[i].y());
+        meshData.append(vertexCoords[i].z());
+        meshData.append(vertexNormals[i].x());
+        meshData.append(vertexNormals[i].y());
+        meshData.append(vertexNormals[i].z());
     }
 
     meshSize = vertexCoords.size();
@@ -184,7 +185,7 @@ void MainView::updateProjectionTransform()
 void MainView::updateModelTransforms()
 {
     meshTransform.setToIdentity();
-    meshTransform.translate(0, 0, -10);
+    meshTransform.translate(0, -1, -2);
     meshTransform.scale(scale);
     meshTransform.rotate(QQuaternion::fromEulerAngles(rotation));
 
