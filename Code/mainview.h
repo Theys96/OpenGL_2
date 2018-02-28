@@ -21,7 +21,10 @@ class MainView : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core {
     QOpenGLDebugLogger *debugLogger;
     QTimer timer; // timer used for animation
 
-    QOpenGLShaderProgram shaderProgram;
+    QOpenGLShaderProgram* shaderProgram;
+    QOpenGLShaderProgram shaderProgramNormal;
+    QOpenGLShaderProgram shaderProgramGour;
+    QOpenGLShaderProgram shaderProgramPhong;
     GLint uniformModelViewTransform;
     GLint uniformProjectionTransform;
     GLint uniformNormalTransform;
