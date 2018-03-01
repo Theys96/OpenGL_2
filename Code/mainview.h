@@ -28,6 +28,7 @@ class MainView : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core {
     GLint uniformModelViewTransform;
     GLint uniformProjectionTransform;
     GLint uniformNormalTransform;
+    GLint uniformMaterialColour;
 
     // Mesh values
     GLuint meshVAO;
@@ -35,6 +36,7 @@ class MainView : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core {
     GLuint meshSize;
     QMatrix4x4 meshTransform;
     QMatrix3x3 normalTransform;
+    QVector4D materialColour;
 
     // Transforms
     float scale = 1.f;
