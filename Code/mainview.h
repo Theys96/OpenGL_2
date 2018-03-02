@@ -30,11 +30,14 @@ class MainView : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core {
     GLint uniformNormalTransform;
     GLint uniformMaterialColour;
     GLint uniformLightPosition;
+    GLint uniformSampler;
 
     // Mesh values
     GLuint meshVAO;
     GLuint meshVBO;
     GLuint meshSize;
+    GLuint texture;
+    QVector<quint8> textureImage;
     QMatrix4x4 meshTransform;
     QMatrix3x3 normalTransform;
     QVector3D materialColour;
@@ -63,6 +66,8 @@ protected:
     void initializeGL();
     void resizeGL(int newWidth, int newHeight);
     void paintGL();
+    QVector<quint8> imageToBytes(QImage
+    image);
 
     // Functions for keyboard input events
     void keyPressEvent(QKeyEvent *ev);

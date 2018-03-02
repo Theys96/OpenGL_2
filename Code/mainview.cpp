@@ -105,6 +105,7 @@ void MainView::createShaderProgram()
     uniformProjectionTransform = shaderProgram->uniformLocation("projectionTransform");
     uniformMaterialColour = shaderProgram->uniformLocation("materialColour");
     uniformLightPosition = shaderProgram->uniformLocation("lightPosition");
+    uniformSampler = shaderProgram->uniformLocation("sampler");
 }
 
 void MainView::loadMesh()
@@ -115,9 +116,10 @@ void MainView::loadMesh()
     Model model(":/models/cat.obj");
     QVector<QVector3D> vertexCoords = model.getVertices();
     QVector<QVector3D> vertexNormals = model.getNormals();
+    QVector<QVector2D> vertexTextureCoords = model.getTextureCoords();
 
     QVector<float> meshData;
-    meshData.reserve(2 * 3 * vertexCoords.size());
+    meshData.reserve(vertexCoords.size() + vertexNormals.size() + vertexTextureCoords.size());
 
     for (int i = 0; i < vertexCoords.length(); i++)
     {
@@ -127,9 +129,11 @@ void MainView::loadMesh()
         meshData.append(vertexNormals[i].x());
         meshData.append(vertexNormals[i].y());
         meshData.append(vertexNormals[i].z());
+        meshData.append(vertexTextureCoords[i].x());
+        meshData.append(vertexTextureCoords[i].y());
     }
 
-    meshSize = vertexCoords.size();
+    meshSize = meshData.size();
 
     // Generate VAO
     glGenVertexArrays(1, &meshVAO);
@@ -143,15 +147,28 @@ void MainView::loadMesh()
     glBufferData(GL_ARRAY_BUFFER, meshData.size() * sizeof(float), meshData.data(), GL_STATIC_DRAW);
 
     // Set vertex coordinates to location 0
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 0);
     glEnableVertexAttribArray(0);
 
     // Set colour coordinates to location 1
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+
+    // Set texture coordinates to location 2
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    textureImage = imageToBytes(QImage(":/textures/cat_diff.png"));
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 512, 1024, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureImage.data());
 }
 
 
@@ -177,6 +194,11 @@ void MainView::paintGL() {
 
     glUniform3f(uniformMaterialColour, materialColour[0], materialColour[1], materialColour[2]);
     glUniform3f(uniformLightPosition, lightPosition[0], lightPosition[1], lightPosition[2]);
+
+    glUniform1i(uniformSampler, 0);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture);
 
     glBindVertexArray(meshVAO);
     glDrawArrays(GL_TRIANGLES, 0, meshSize);

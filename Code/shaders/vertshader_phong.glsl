@@ -11,6 +11,7 @@
 // Specify the input locations of attributes
 layout (location = 0) in vec3 vertCoordinates_in;
 layout (location = 1) in vec3 vertNormal_in;
+layout (location = 2) in vec2 vertTexture_in;
 
 // Specify the Uniforms of the vertex shader
 uniform mat4 modelViewTransform;
@@ -18,10 +19,12 @@ uniform mat3 normalTransform;
 uniform mat4 projectionTransform;
 uniform vec3 lightPosition;
 uniform vec3 materialColour;
+uniform sampler2D sampler;
 
 // Specify the output of the vertex stage
 out vec3 vertNormal;
 out vec3 actualPosition;
+out vec2 texturePos;
 
 void main()
 {
@@ -29,7 +32,7 @@ void main()
     vec4 position = modelViewTransform * vec4(vertCoordinates_in, 1.0);
     gl_Position = projectionTransform * position;
     actualPosition = position.xyz;
-
+    texturePos = vertTexture_in;
     vertNormal = normalize(normalTransform * vertNormal_in);
 
 }
