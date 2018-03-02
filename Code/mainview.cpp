@@ -104,14 +104,17 @@ void MainView::createShaderProgram()
     uniformNormalTransform = shaderProgram->uniformLocation("normalTransform");
     uniformProjectionTransform = shaderProgram->uniformLocation("projectionTransform");
     uniformMaterialColour = shaderProgram->uniformLocation("materialColour");
+    uniformLightPosition = shaderProgram->uniformLocation("lightPosition");
 }
 
 void MainView::loadMesh()
 {
+    materialColour = QVector3D(1,0.3,0.75);
+    lightPosition = QVector3D(2,2,2);
+
     Model model(":/models/cat.obj");
     QVector<QVector3D> vertexCoords = model.getVertices();
     QVector<QVector3D> vertexNormals = model.getNormals();
-    materialColour = QVector4D(0.4, 1, 0.75, 1);
 
     QVector<float> meshData;
     meshData.reserve(2 * 3 * vertexCoords.size());
@@ -171,7 +174,9 @@ void MainView::paintGL() {
     glUniformMatrix4fv(uniformProjectionTransform, 1, GL_FALSE, projectionTransform.data());
     glUniformMatrix4fv(uniformModelViewTransform, 1, GL_FALSE, meshTransform.data());
     glUniformMatrix3fv(uniformNormalTransform, 1, GL_FALSE, normalTransform.data());
-    //glUniform4f(uniformMaterialColour, materialColour.w(), materialColour.x(), materialColour.y(), materialColour.z()); //THIS IS UGLY
+
+    glUniform3f(uniformMaterialColour, materialColour[0], materialColour[1], materialColour[2]);
+    glUniform3f(uniformLightPosition, lightPosition[0], lightPosition[1], lightPosition[2]);
 
     glBindVertexArray(meshVAO);
     glDrawArrays(GL_TRIANGLES, 0, meshSize);

@@ -3,10 +3,10 @@
 // Define constants
 #define M_PI 3.141593
 
-#define AMBIENT 0.4
-#define DIFFUSE 0.8
-#define SPECULAR 0.5
-#define EXPONENT 20
+#define AMBIENT 0.2
+#define DIFFUSE 0.4
+#define SPECULAR 0.3
+#define EXPONENT 10
 
 // Specify the input locations of attributes
 layout (location = 0) in vec3 vertCoordinates_in;
@@ -20,7 +20,7 @@ uniform vec3 lightPosition = vec3(2,2,2);
 uniform vec3 materialColour = vec3(1,0.3,0.75);
 
 // Specify the output of the vertex stage
-out vec3 vertNormal;
+out vec3 vertColor;
 
 void main()
 {
@@ -29,13 +29,12 @@ void main()
     gl_Position = projectionTransform * position;
     vec3 actualPosition = position.xyz;
     vec3 localLightPosition = (modelViewTransform * vec4(lightPosition, 1.0)).xyz;
-
-    vertNormal = normalize(normalTransform * vertNormal_in);
+    vec3 vertNormal = normalize(normalTransform * vertNormal_in);
     vec3 lightDirection = normalize(localLightPosition - actualPosition);
     vec3 ambient = AMBIENT * materialColour;
     vec3 diffuse = max(0, dot(vertNormal,lightDirection)) * DIFFUSE * materialColour;
     vec3 eyeDirection = normalize(actualPosition);
     float specular = SPECULAR * pow(max(0, dot(reflect(lightDirection, vertNormal), eyeDirection)), EXPONENT);
-    vertNormal = ambient + diffuse + specular;
+    vertColor = ambient + diffuse + specular;
 
 }
