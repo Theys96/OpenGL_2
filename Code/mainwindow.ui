@@ -128,7 +128,7 @@
              <string>Pho&amp;ng</string>
             </property>
             <property name="checked">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
            </widget>
           </item>
@@ -143,6 +143,9 @@
            <widget class="QRadioButton" name="GouraudButton">
             <property name="text">
              <string>&amp;Gouraud</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
