@@ -20,7 +20,7 @@ out vec4 fColor;
 
 void main()
 {
-    vec3 textureColor = (texture2D(sampler, texturePos)).rgb;
+    vec3 textureColor = (texture(sampler, texturePos)).rgb;
     vec3 color = textureColor*(ambient + diffuse) + specular;
     fColor = vec4(color, 1.0);
 }

@@ -29,7 +29,7 @@ out vec4 fColor;
 
 void main()
 {
-    vec3 textureColor = (texture2D(sampler, texturePos)).rgb;
+    vec3 textureColor = (texture(sampler, texturePos)).rgb;
     vec3 localLightPosition = (modelViewTransform * vec4(lightPosition, 1.0)).xyz;
     vec3 lightDirection = normalize(localLightPosition - actualPosition);
     vec3 ambient = AMBIENT * textureColor;
