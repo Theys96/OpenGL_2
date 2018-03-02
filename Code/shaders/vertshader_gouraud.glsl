@@ -11,7 +11,7 @@ layout (location = 1) in vec3 vertNormal_in;
  uniform mat4 modelViewTransform;
  uniform mat3 normalTransform;
  uniform mat4 projectionTransform;
- uniform vec3 lightPosition = vec3(3,3,-1);
+ uniform vec3 lightPosition = vec3(0,1,-2);
  uniform vec3 materialColour = vec3(0.3,1,0.75);
 
 // Specify the output of the vertex stage
@@ -23,11 +23,10 @@ void main()
     gl_Position = projectionTransform * modelViewTransform * vec4(vertCoordinates_in, 1.0);
     vertNormal = normalize(normalTransform * vertNormal_in);
     vec3 lightDirection = normalize(lightPosition - vertCoordinates_in);
-    vec3 ambient = (materialColour * 0.4);
-    vec3 diffuse = max(vec3(0,0,0),normalize(dot(vertNormal,lightDirection) * materialColour));
+    vec3 ambient = normalize(materialColour * 0.2);
+    vec3 diffuse = max(vec3(0.0,0.0,0.0),normalize(dot(vertNormal,lightDirection) * materialColour));
     vec3 eyeDirection = vertCoordinates_in;
-    vec3 specular = pow(max(vec3(0,0,0),dot((2*reflect(vertNormal, lightDirection)) - lightDirection, eyeDirection)), vec3(3,3,3));
-    vertNormal = ambient + diffuse + specular; //this throws errors when not added to vertNormal
-
+    vec3 specular = pow(max(vec3(0.0,0.0,0.0), dot((2*reflect(vertNormal, lightDirection)) - lightDirection, eyeDirection)), vec3(3.0,3.0,3.0));
+    vertNormal = ambient + diffuse; + specular;
 
 }
