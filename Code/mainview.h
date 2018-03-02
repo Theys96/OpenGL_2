@@ -63,11 +63,11 @@ public:
     void setShadingMode(ShadingMode shading);
 
 protected:
+    void loadTexture(QString textureString);
     void initializeGL();
     void resizeGL(int newWidth, int newHeight);
     void paintGL();
-    QVector<quint8> imageToBytes(QImage
-    image);
+    QVector<quint8> imageToBytes(QImage image);
 
     // Functions for keyboard input events
     void keyPressEvent(QKeyEvent *ev);
