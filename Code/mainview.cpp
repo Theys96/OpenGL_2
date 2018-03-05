@@ -97,7 +97,7 @@ void MainView::createShaderProgram()
                                            ":/shaders/fragshader_phong.glsl");
     shaderProgramPhong.link();
 
-    shaderProgram = &shaderProgramGour;
+    shaderProgram = &shaderProgramPhong;
 
     // Get the uniforms
     uniformModelViewTransform = shaderProgram->uniformLocation("modelViewTransform");
@@ -284,7 +284,7 @@ void MainView::setShadingMode(ShadingMode shading)
             shaderProgram = &shaderProgramPhong;
         break;
     }
-       update();
+    update();
 }
 
 // --- Private helpers
