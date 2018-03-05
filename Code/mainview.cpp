@@ -160,17 +160,23 @@ void MainView::loadMesh()
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+    loadTexture(":/textures/cat_diff.png");
+}
 
+void MainView::loadTexture(QString textureString) {
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
+    GLfloat f;
+    glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT,&f);
+    glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAX_ANISOTROPY_EXT,f);//This and previous 2 lines should enable anisotropic filtering
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    textureImage = imageToBytes(QImage(":/textures/cat_diff.png"));
+    textureImage = imageToBytes(QImage(textureString));
+
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 512, 1024, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureImage.data());
 }
-
 
 // --- OpenGL drawing
 
