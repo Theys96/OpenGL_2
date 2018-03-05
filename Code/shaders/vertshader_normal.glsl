@@ -26,11 +26,6 @@ out vec3 vertNormal;
 void main()
 {
     // gl_Position is the output (a vec4) of the vertex shader
-    vec4 position = modelViewTransform * vec4(vertCoordinates_in, 1.0);
-    gl_Position = projectionTransform * position;
-    vec3 actualPosition = position.xyz;
-    vec3 localLightPosition = (modelViewTransform * vec4(lightPosition, 1.0)).xyz;
-
+    gl_Position = projectionTransform * modelViewTransform * vec4(vertCoordinates_in, 1.0);
     vertNormal = normalize(normalTransform * vertNormal_in);
-
 }
